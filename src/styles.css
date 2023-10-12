@@ -1,0 +1,93 @@
+:root {
+  --bg-color: #fff;
+  --accent-color: #4e9590;
+  --black-color: #000000;
+  --gray-color: #bfbfbf;
+  --brackets-color: #f2cab8;
+  --invalid-color: #bf0e0e;
+  --button-color: linear-gradient(180deg, #e4e4e4 0%, #f7f7f7 100%);
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-left {
+  align-items: left;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+h1 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  margin: 0px;
+}
+
+h2 {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  margin: 0px;
+}
+
+p {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  margin: 0px;
+}
+
+button {
+  display: flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 5px;
+  border: 1px solid var(--black-color);
+  opacity: 0.7;
+  background: var(--button-color);
+}
+
+.p-8 {
+  padding: 8px;
+}
+
+.px-46 {
+  padding-left: 46px;
+  padding-right: 46px;
+}
+
+.py-24 {
+  padding-top: 102px;
+  padding-bottom: 102px;
+}
+
+.gap-24 {
+  gap: 24px;
+}
+
+.hidden {
+  display: none;
+}
+
+.error {
+  color: var(--invalid-color);
+}

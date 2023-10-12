@@ -1,0 +1,4 @@
+node_modules/
+
+# Examples, GitHub max file size is 100 MB
+examples/giant.json
