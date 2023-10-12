@@ -15,6 +15,11 @@
   transform: translate(-50%, -50%);
 }
 
+.mx-auto {
+  width: max-content;
+  margin: 0 auto;
+}
+
 .flex-col {
   display: flex;
   flex-direction: column;
@@ -90,4 +95,39 @@ button {
 
 .error {
   color: var(--invalid-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+.text-gray {
+  color: var(--gray-color);
+}
+
+.text-black {
+  color: var(--black-color);
+}
+
+.text-brackets {
+  color: var(--brackets-color);
+}
+
+.indentation {
+  border-style: inset;
+  border-width: 0px 0px 0px 1px;
+  border-color: var(--gray-color);
+  padding-left: 16px;
+  margin-left: 2px;
+}
+
+.array-index {
+  color: var(--gray-color);
+  padding: 4px 0px;
+}
+
+/* per-element styling  */
+
+#home {
+  min-height: 100vh;
 }

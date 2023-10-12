@@ -18,51 +18,151 @@
   <link rel="stylesheet" type="text/css" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" as="font"
+    rel="stylesheet">
   <title>JSON Tree Viewer</title>
 </head>
 
 <body class="px-46 py-102">
-  <div class="center flex-col align-center justify-center gap-24"> <!-- TODO: could be a drag and drop zone -->
+  <div id="home" class="flex-col align-center justify-center gap-24">
+    <!-- TODO: could be a drag and drop zone -->
     <h1>JSON Tree Viewer</h1>
     <h2>Simple JSON Viewer that runs completely on-client. No data exchange</h2>
     <input class="hidden" type="file" id="json-input" accept=".json" />
     <button type="button" onclick="document.getElementById('json-input').click()">Load JSON</button>
-    <!-- <button type="button" onclick="onFooClick">Load JSON</button> -->
     <p class="error hidden" id="error-message">Invalid file. Please load a valid JSON file.</p>
-
-    <script>
-      const inputElement = document.getElementById("json-input");
-      const errorMessage = document.getElementById('error-message')
-
-      inputElement.addEventListener("change", handleFiles, false);
-      function handleFiles() {
-        hideError()
-        console.log(this)
-        const file = this.files[0]
-        const reader = new FileReader();
-        reader.addEventListener('load', (event) => {
-          const jsonString = event.target.result
-          try {
-            const json = JSON.parse(jsonString)
-            console.log(json)
-          } catch {
-            showError()
-          }
-        });
-        reader.readAsText(file);
-      }
-
-      function hideError() {
-        errorMessage.classList.add("hidden")
-      }
-
-      function showError() {
-        errorMessage.classList.remove("hidden")
-      }
-    </script>
-
   </div>
+
+  <div id="json-tree-viewer" class="hidden mx-auto flex-col align-left justify-center gap-24">
+    <h1 id="title">alltypes.json</h1>
+    <div id="json" class="text-accent">
+      <p>Actors: <span class="text-brackets">[</span></p>
+      <div class="indentation">
+        <p class="array-index">0:</p>
+        <div class="indentation">
+          <p>name: <span class="text-black">"Tom Brady"</span></p>
+          <p>age: <span class="text-black">56</span></p>
+        </div>
+        <p class="array-index">1:</p>
+        <div class="indentation">
+          <p>name: <span class="text-black">"Tom Brady"</span></p>
+          <p>age: <span class="text-black">56</span></p>
+        </div>
+
+      </div>
+      <p class="text-brackets">]</p>
+    </div>
+  </div>
+
+  <script>
+    const inputElement = document.getElementById("json-input");
+    const errorMessage = document.getElementById('error-message')
+    const home = document.getElementById('home');
+    const jsonTitle = document.getElementById('title');
+    const jsonTreeViewer = document.getElementById('json-tree-viewer');
+    const jsonContent = document.getElementById('json');
+    const fragment = document.createDocumentFragment();
+
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+      hideError()
+      console.log(this)
+      const file = this.files[0]
+
+      const reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+        const jsonString = event.target.result
+        try {
+          const json = JSON.parse(jsonString)
+          jsonTitle.textContent = file.name
+          jsonContent.innerHTML = "<pre>" + jsonString + "</pre>"
+          home.classList.add("hidden")
+          jsonTreeViewer.classList.remove("hidden")
+          renderJson(fragment, json)
+          jsonContent.appendChild(fragment)
+        } catch (e) {
+          showError()
+        }
+      });
+      reader.readAsText(file);
+    }
+
+    function renderJson(parent, object, prefix = null) {
+      let type = typeof object;
+      if (type === 'string' || type === 'number' || type === 'boolean' || object === null) {
+        let valueElem = document.createElement(prefix !== null ? 'span' : 'p')
+        valueElem.classList.add('text-black')
+        let text = ""
+        if (type === 'string') {
+          text += "\""
+        }
+        text += object === null ? "null" : object
+        if (type === 'string') {
+          text += "\""
+        }
+        valueElem.textContent = text
+        if (prefix !== null) {
+          prefix.appendChild(valueElem)
+          valueElem = prefix
+        }
+        parent.appendChild(valueElem)
+      } else if (Array.isArray(object)) {
+        let leftBracket = document.createElement(prefix !== null ? 'span' : 'p')
+        leftBracket.classList.add("text-brackets");
+        leftBracket.textContent = "["
+        if (prefix !== null) {
+          prefix.appendChild(leftBracket)
+          leftBracket = prefix
+        }
+        let rightBracket = document.createElement("p")
+        rightBracket.classList.add("text-brackets");
+        rightBracket.textContent = "]"
+        let indentDiv = document.createElement("div")
+        indentDiv.classList.add("indentation")
+
+        let i = 0, len = object.length;
+        while (i < len) {
+          let item = object[i]
+
+          let indexP = document.createElement("p")
+          indexP.classList.add("array-index")
+          indexP.textContent = `${i}: `
+          indentDiv.appendChild(indexP)
+          renderJson(indentDiv, item, indexP)
+          i++
+        }
+        parent.appendChild(leftBracket)
+        parent.appendChild(indentDiv)
+        parent.appendChild(rightBracket)
+      } else {
+        let objectParent = parent
+        if (prefix !== null) {
+          parent.appendChild(prefix)
+          objectParent = document.createElement("div")
+          objectParent.classList.add("indentation")
+        }
+
+        for (let key in object) {
+          let keyElem = document.createElement('p')
+          keyElem.textContent = `${key}: `
+          renderJson(objectParent, object[key], keyElem)
+        }
+
+        if (parent !== objectParent) {
+          parent.appendChild(objectParent)
+        }
+      }
+    }
+
+    function hideError() {
+      errorMessage.classList.add("hidden")
+    }
+
+    function showError() {
+      errorMessage.classList.remove("hidden")
+    }
+  </script>
+
 </body>
 
 </html>
